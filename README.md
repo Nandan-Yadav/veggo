@@ -1,5 +1,5 @@
 # veggo
-<<<<<<< HEAD
+
 Online Vegetable delivery application 
 =======
 
