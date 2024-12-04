@@ -2,6 +2,19 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    
+	<!-- Location Permissions -->
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>We need your location to provide you with location-based features.</string>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>We need your location to offer services even when the app is not active.</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Your location is required for enhanced user experience, both in the foreground and background.</string>
+
+    <!-- Notification Permission Description (Optional) -->
+    <key>NSUserNotificationUsageDescription</key>
+    <string>We need permission to send you notifications for important updates.</string>
+
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
