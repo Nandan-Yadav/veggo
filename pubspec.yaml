@@ -18,21 +18,14 @@ dependencies:
 
   # Utility Packages   
   cupertino_icons: ^1.0.8
-
-  # Smooth Page Indicator
   smooth_page_indicator: ^1.2.0+3
-
-  # Shared Preferences for Local Storage
   shared_preferences: any
-
-  # Permission Handler Device Permissions Services  
   permission_handler: ^11.3.1
-
-  # SVG files Render
   flutter_svg: ^2.0.16
   http: ^1.2.2
   intl: ^0.20.1
-  get: ^4.6.6
+  flutter_native_splash: ^2.4.3
+  provider: ^6.1.2
 
 
 
@@ -58,18 +51,13 @@ flutter:
     - assets/logos/
 
     # Icons 
-    - assets/icons/location.svg
+    - assets/icons/
     
     # Images
-    - assets/images/login.svg
-    - assets/images/location.svg
-    - assets/images/welcome_text.svg
-    - assets/images/welcome.svg 
+    - assets/images/
 
     # Videos
-    - assets/videos/onboarding1.gif
-    - assets/videos/onboarding2.gif
-    - assets/videos/onboarding3.gif
+    - assets/videos/
 
 
   #------------------------ Local Fonts ----------------------
