@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "436961062849",
+    "project_id": "veggo-4cd7b",
+    "storage_bucket": "veggo-4cd7b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:436961062849:android:db4158819096525db0c940",
+        "android_client_info": {
+          "package_name": "com.example.veggo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdyPuSQIJmuo3Hrkwpf5xgJCtuACEBjho"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

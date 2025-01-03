@@ -48,7 +48,7 @@ class CTextTheme {
     bodySmall: const TextStyle().copyWith(
       fontSize: 14.0,
       fontWeight: FontWeight.w500,
-      color: Colors.black.withOpacity(0.5),
+      color: Colors.black.withValues(alpha: .5),
     ),
     labelLarge: const TextStyle().copyWith(
         fontSize: 12.0,

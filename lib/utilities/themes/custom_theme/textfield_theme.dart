@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:veggo/utilities/constants/size.dart';
 
 class CTextFormFieldTheme {
   CTextFormFieldTheme._();
@@ -9,30 +10,30 @@ class CTextFormFieldTheme {
     prefixIconColor: Colors.grey,
     suffixIconColor: Colors.grey,
   ).copyWith(
-    labelStyle: const TextStyle().copyWith(fontSize: 14, color: Colors.white),
-    hintStyle: const TextStyle().copyWith(fontSize: 14, color: Colors.white),
+    labelStyle: const TextStyle().copyWith(fontSize: 16, color: Colors.grey),
+    hintStyle: const TextStyle().copyWith(fontSize: 16, color: Colors.grey),
     floatingLabelStyle: const TextStyle().copyWith(
-      color: Colors.white.withOpacity(0.8),
+      color: const Color(0xFF388E3C).withOpacity(0.8), 
     ),
     border: const OutlineInputBorder().copyWith(
-      borderRadius: BorderRadius.circular(14),
-      borderSide: const BorderSide().copyWith(width: 1, color: Colors.grey),
+      borderRadius: BorderRadius.circular(CSizes.inputFieldRadius),
+      borderSide: const BorderSide().copyWith(width: 1, color: const Color(0xFF388E3C)),
     ),
     enabledBorder: const OutlineInputBorder().copyWith(
-      borderRadius: BorderRadius.circular(14),
-      borderSide: const BorderSide().copyWith(width: 1, color: Colors.grey),
+      borderRadius: BorderRadius.circular(CSizes.inputFieldRadius),
+      borderSide: const BorderSide().copyWith(width: 1, color: const Color(0xFF388E3C)),
     ),
     focusedBorder: const OutlineInputBorder().copyWith(
-      borderRadius: BorderRadius.circular(14),
-      borderSide: const BorderSide().copyWith(width: 1, color: Colors.white),
+      borderRadius: BorderRadius.circular(CSizes.inputFieldRadius),
+      borderSide: const BorderSide().copyWith(width: 2, color: const Color(0xFF388E3C)), 
     ),
     errorBorder: const OutlineInputBorder().copyWith(
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(CSizes.inputFieldRadius),
       borderSide: const BorderSide().copyWith(width: 1, color: Colors.red),
     ),
     focusedErrorBorder: const OutlineInputBorder().copyWith(
-      borderRadius: BorderRadius.circular(14),
-      borderSide: const BorderSide().copyWith(width: 2, color: Colors.orange),
+      borderRadius: BorderRadius.circular(CSizes.inputFieldRadius),
+      borderSide: const BorderSide().copyWith(width: 2, color: Colors.red),
     ),
   );
 
@@ -42,30 +43,30 @@ class CTextFormFieldTheme {
     prefixIconColor: Colors.grey,
     suffixIconColor: Colors.grey,
   ).copyWith(
-    labelStyle: const TextStyle().copyWith(fontSize: 14, color: Colors.black),
-    hintStyle: const TextStyle().copyWith(fontSize: 14, color: Colors.black),
+    labelStyle: const TextStyle().copyWith(fontSize: 14, color: Colors.grey),
+    hintStyle: const TextStyle().copyWith(fontSize: 14, color: Colors.grey),
     floatingLabelStyle: const TextStyle().copyWith(
-      color: Colors.black.withOpacity(0.8),
+      color: const Color(0xFF388E3C).withOpacity(0.8), 
     ),
     border: const OutlineInputBorder().copyWith(
-      borderRadius: BorderRadius.circular(14),
-      borderSide: const BorderSide().copyWith(width: 1, color: Colors.black),
+      borderRadius: BorderRadius.circular(CSizes.inputFieldRadius),
+      borderSide: const BorderSide().copyWith(width: 1, color: const Color(0xFF388E3C)),
     ),
     enabledBorder: const OutlineInputBorder().copyWith(
-      borderRadius: BorderRadius.circular(14),
-      borderSide: const BorderSide().copyWith(width: 1, color: Colors.grey),
+      borderRadius: BorderRadius.circular(CSizes.inputFieldRadius),
+      borderSide: const BorderSide().copyWith(width: 1, color: const Color(0xFF388E3C)),
     ),
     focusedBorder: const OutlineInputBorder().copyWith(
-      borderRadius: BorderRadius.circular(14),
-      borderSide: const BorderSide().copyWith(width: 1, color: Colors.black12),
+      borderRadius: BorderRadius.circular(CSizes.inputFieldRadius),
+      borderSide: const BorderSide().copyWith(width: 2, color: const Color(0xFF388E3C)), // Thicker border when focused
     ),
     errorBorder: const OutlineInputBorder().copyWith(
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(CSizes.inputFieldRadius),
       borderSide: const BorderSide().copyWith(width: 1, color: Colors.red),
     ),
     focusedErrorBorder: const OutlineInputBorder().copyWith(
-      borderRadius: BorderRadius.circular(14),
-      borderSide: const BorderSide().copyWith(width: 2, color: Colors.orange),
+      borderRadius: BorderRadius.circular(CSizes.inputFieldRadius),
+      borderSide: const BorderSide().copyWith(width: 2, color: Colors.red),
     ),
   );
 }

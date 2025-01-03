@@ -39,7 +39,7 @@ class AppTheme {
       appBarTheme: CAppBarTheme.darkAppBarTheme,
       checkboxTheme: CCheckboxTheme.darkCheckboxTheme,
       chipTheme: CChipTheme.darkChipTheme,
-      elevatedButtonTheme: CElevatedButtonTheme.darktElevatedButtonTheme,
+      elevatedButtonTheme: CElevatedButtonTheme.darkElevatedButtonTheme,
       outlinedButtonTheme: COutlinedButtonTheme.darkOutlinedButtonTheme,
       inputDecorationTheme: CTextFormFieldTheme.darkInputDecorationTheme,
       textButtonTheme: CTextButtonTheme.lightTextButtonTheme);

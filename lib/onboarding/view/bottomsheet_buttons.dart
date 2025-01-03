@@ -119,7 +119,7 @@ class BottomSheetNavigationsButtons extends StatelessWidget {
             'Onboarding completed. Stored value: ${LocalStorageService.isOnboardingCompleted()} }');
 
         Navigator.of(context)
-            .pushReplacementNamed('/home'); // Navigate to home screen
+            .pushReplacementNamed('/sign_in'); // Navigate to Sign Up Screen
       },
       child: Text(
         'Get Started',
