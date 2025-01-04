@@ -1,19 +1,38 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:veggo/Auth/view_model/auth_view_model.dart';
+import 'package:veggo/Auth/view_model/login_view_model.dart';
+import 'package:veggo/Auth/widgets/custom_form_field.dart';
 import 'package:veggo/Auth/widgets/custom_image.dart';
 import 'package:veggo/data/auth_data.dart';
+import 'package:veggo/utilities/constants/color.dart';
 import 'package:veggo/utilities/constants/size.dart';
 import 'package:veggo/utilities/devices/device_utilities.dart';
 import 'package:veggo/utilities/validators/text_field_validation.dart';
 import 'package:veggo/Auth/widgets/custom_country_picker_theme.dart';
 
-class SignInScreenView extends StatelessWidget {
-  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  final TextEditingController phoneNumberController = TextEditingController();
+class SignInScreenView extends StatefulWidget {
+  const SignInScreenView({super.key});
 
-  SignInScreenView({super.key});
+  @override
+  _SignInScreenViewState createState() => _SignInScreenViewState();
+}
+
+class _SignInScreenViewState extends State<SignInScreenView> {
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  late TextEditingController phoneNumberController;
+
+  @override
+  void initState() {
+    super.initState();
+    phoneNumberController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    phoneNumberController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +42,6 @@ class SignInScreenView extends StatelessWidget {
           padding: const EdgeInsets.all(CSizes.defaultSpace),
           child: Column(
             children: [
-              // Header Image
               CustomImage(
                 imagePath: AuthData.signInSrc,
                 width: double.infinity,
@@ -31,98 +49,96 @@ class SignInScreenView extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
               const SizedBox(height: CSizes.spaceBtSections),
-
-              // Title
               Text(
                 AuthData.signInTitle,
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               const SizedBox(height: CSizes.paddingSm),
-
-              // Subtitle
-              Text(
-                AuthData.signInDescription,
-              ),
+              Text(AuthData.signInDescription),
               const SizedBox(height: CSizes.spaceBtSections),
-
-              // Phone Number Form
               Form(
                 key: formKey,
                 child: Column(
                   children: [
-                    // Phone Number Input with Country Selector
-                    TextFormField(
+                    CustomFormField(
                       controller: phoneNumberController,
-                      decoration: InputDecoration(
-                        labelText: 'Phone Number',
-                        labelStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              fontSize: CSizes.fontSizeMd,
-                            ),
-                            hintText:  'Enter your phone number',
-                            hintStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              fontSize: CSizes.fontSizeMd,
-                            ),
-                        prefixIcon: Consumer<AuthViewModel>(
-                          builder: (context, authViewModel, child) {
-                            return InkWell(
-                              onTap: () {
-                                CustomCountryPicker.showCountryPickerDialog(
-                                  context: context,
-                                  onSelect: (Country country) {
-                                    authViewModel
-                                        .updateSelectedCountry(country);
-                                  },
-                                );
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Text(
-                                  '${authViewModel.selectedCountry.flagEmoji} +${authViewModel.selectedCountry.phoneCode}',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge!
-                                      .copyWith(fontSize: CSizes.fontSizeLg),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                        border: const OutlineInputBorder(),
-                      ),
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontSize: CSizes.fontSizeLg,
-                          ),
-                      keyboardType: TextInputType.phone,
+                      keyboardType: TextInputType.number,
+                      labelText: 'Phone Number',
+                      hintText: 'Enter your phone number',
                       validator: TextFieldValidation.validatePhoneNumber,
+                      prefix: Consumer<LoginViewModel>(
+                        builder: (context, loginViewModel, child) {
+                          return InkWell(
+                            onTap: () {
+                              CustomCountryPicker.showCountryPickerDialog(
+                                context: context,
+                                onSelect: (Country country) {
+                                  loginViewModel.updateSelectedCountry(country);
+                                },
+                              );
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text(
+                                '${loginViewModel.selectedCountry.flagEmoji} +${loginViewModel.selectedCountry.phoneCode}',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge!
+                                    .copyWith(fontSize: CSizes.fontSizeLg),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                     const SizedBox(height: CSizes.spaceBtSections),
-
-                    // Submit Button
-                    Selector<AuthViewModel, bool>(
-                      selector: (_, authViewModel) => authViewModel.isLoading,
-                      builder: (context, isLoading, _) {
-                        return ElevatedButton(
-                          onPressed: isLoading
-                              ? null
-                              : () {
-                                  if (formKey.currentState?.validate() ??
-                                      false) {
-                                    final authViewModel =
-                                        Provider.of<AuthViewModel>(
-                                      context,
-                                      listen: false,
-                                    );
-                                    final phoneNumber =
-                                        '+${authViewModel.selectedCountry.phoneCode}${phoneNumberController.text.trim()}';
-                                    authViewModel
-                                        .startPhoneVerification(phoneNumber);
-                                  }
-                                },
-                          child: isLoading
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white)
-                              : const Text('Send OTP'),
+                    Consumer<LoginViewModel>(
+                      builder: (context, loginViewModel, child) {
+                        return Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                disabledBackgroundColor:
+                                    loginViewModel.isLoading
+                                        ? CColors.primary
+                                        : Colors.grey,
+                              ),
+                              onPressed: loginViewModel.isLoading
+                                  ? null
+                                  : () {
+                                      if (formKey.currentState?.validate() ??
+                                          false) {
+                                        final phoneNumber =
+                                            '+${loginViewModel.selectedCountry.phoneCode}${phoneNumberController.text.trim()}';
+                                        loginViewModel.startPhoneVerification(
+                                            phoneNumber, context);
+                                      }
+                                    },
+                              child: loginViewModel.isLoading
+                                  ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : const Text('Send OTP'),
+                            ),
+                          ],
                         );
+                      },
+                    ),
+                    Consumer<LoginViewModel>(
+                      builder: (context, loginViewModel, child) {
+                        if (loginViewModel.loginerrorCode != null) {
+                          return Text(
+                            loginViewModel.loginerrorCode!,
+                            style: const TextStyle(color: Colors.red),
+                          );
+                        }
+                        return Container();
                       },
                     ),
                   ],

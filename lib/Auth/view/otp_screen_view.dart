@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
-import 'package:veggo/Auth/controller/auth_provider.dart';
-import 'package:veggo/Auth/view_model/auth_view_model.dart';
+import 'package:veggo/Auth/view_model/otp_view_model.dart';
 import 'package:veggo/Auth/widgets/custom_image.dart';
 import 'package:veggo/data/auth_data.dart';
 import 'package:veggo/utilities/constants/color.dart';
@@ -10,17 +9,33 @@ import 'package:veggo/utilities/constants/size.dart';
 import 'package:veggo/utilities/devices/device_utilities.dart';
 import 'package:veggo/utilities/validators/text_field_validation.dart';
 
-class OtpScreenView extends StatelessWidget {
+class OtpScreenView extends StatefulWidget {
   final String verificationId;
-  OtpScreenView({super.key, required this.verificationId});
 
-  final TextEditingController pinPutController = TextEditingController();
-  final GlobalKey<FormState> formkey = GlobalKey<FormState>();
+  const OtpScreenView({super.key, required this.verificationId});
+
+  @override
+  _OtpScreenViewState createState() => _OtpScreenViewState();
+}
+
+class _OtpScreenViewState extends State<OtpScreenView> {
+  late TextEditingController pinPutController;
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    pinPutController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    pinPutController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('--- OtpScreenView: build method called ---');
-
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -29,7 +44,6 @@ class OtpScreenView extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Custom Image Widget
               CustomImage(
                 imagePath: AuthData.otpSrc,
                 width: double.infinity,
@@ -37,85 +51,105 @@ class OtpScreenView extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
               const SizedBox(height: CSizes.spaceBtSections),
-
-              // Title
               Text(
                 AuthData.otpTitle,
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
               const SizedBox(height: CSizes.paddingSm),
-
-              // Description
               Text(
                 AuthData.otpDescription,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: CSizes.spaceBtSections),
-              // OTP Form
               Form(
-                  key: formkey,
-                  child: Column(
-                    children: [
-                      // PinPut OTP Field
-                      Pinput(
-                        length: 6,
-                        autofocus: true,
-                        showCursor: true,
-                        forceErrorState: true,
-                        controller: pinPutController,
-                        closeKeyboardWhenCompleted: false,
-                        hapticFeedbackType: HapticFeedbackType.lightImpact,
-                        pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
-                        validator: (value) {
-                          return TextFieldValidation.validateOtp(value);
-                        },
-                        defaultPinTheme: customPinTheme(context: context),
-                        focusedPinTheme:
-                            customPinTheme(context: context, borderwidth: 2.3),
-                        submittedPinTheme:
-                            customPinTheme(context: context, borderwidth: 2.3),
-                        onCompleted: (String verificationCode) {
-                          debugPrint('onCompleted: $verificationCode');
-                        },
-                        onChanged: (code) {
-                          debugPrint('onChanged: $code');
-                          pinPutController.text = code.trim();
-                        },
-                        cursor: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              height: 20,
-                              width: 2,
-                              color: CColors.primary,
-                            ),
-                          ],
-                        ),
+                key: formKey,
+                child: Column(
+                  children: [
+                    Pinput(
+                      length: 6,
+                      autofocus: true,
+                      showCursor: true,
+                      forceErrorState: true,
+                      controller: pinPutController,
+                      closeKeyboardWhenCompleted: false,
+                      hapticFeedbackType: HapticFeedbackType.lightImpact,
+                      pinputAutovalidateMode: PinputAutovalidateMode.onSubmit,
+                      validator: (value) {
+                        return TextFieldValidation.validateOtp(value);
+                      },
+                      defaultPinTheme: customPinTheme(context: context),
+                      focusedPinTheme:
+                          customPinTheme(context: context, borderwidth: 2.3),
+                      submittedPinTheme:
+                          customPinTheme(context: context, borderwidth: 2.3),
+                      onCompleted: (String verificationCode) {
+                        debugPrint(
+                            '--- OtpScreenView: OTP entered: $verificationCode ---');
+                      },
+                      onChanged: (code) {
+                        debugPrint('--- OtpScreenView: OTP changed: $code ---');
+                        pinPutController.text = code.trim();
+                      },
+                      cursor: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            height: 20,
+                            width: 2,
+                            color: CColors.primary,
+                          ),
+                        ],
                       ),
-                    ],
-                  )),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: CSizes.paddingMd),
 
-              const SizedBox(height: CSizes.spaceBtSections),
-
-              // ElevatedButton
-              Selector<AuthViewModel, bool>(
-                selector: (_, authViewModel) => authViewModel.isLoading,
-                builder: (context, isLoading, child) {
+              // Elevated button to verify OTP.
+              Consumer<OtpViewModel>(
+                builder: (context, otpViewModel, child) {
                   return ElevatedButton(
-                    onPressed: isLoading
+                    style: ElevatedButton.styleFrom(
+                      disabledBackgroundColor: otpViewModel.isLoading
+                          ? CColors.primary
+                          : Colors.grey,
+                    ),
+                    onPressed: otpViewModel.isLoading
                         ? null
                         : () {
-                            final authViewModel = 
-                                Provider.of<AuthViewModel>(context, listen: false);
-                            authViewModel.verifyOtp(
-                              pinPutController.text.trim(),
-                              () => Navigator.pushReplacementNamed(context, '/home'),
-                            );
+                            if (formKey.currentState?.validate() ?? false) {
+                              debugPrint(
+                                  '--- OtpScreenView: Verify OTP button pressed ---');
+                              otpViewModel.signInWithOtp(
+                                widget.verificationId,
+                                pinPutController.text.trim(),
+                                context,
+                              );
+                            }
                           },
-                    child: isLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
+                    child: otpViewModel.isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2.5,
+                            ),
+                          )
                         : const Text('Verify OTP'),
                   );
+                },
+              ),
+              Consumer<OtpViewModel>(
+                builder: (context, otpViewModel, child) {
+                  if (otpViewModel.otpErrorCode != null) {
+                    return Text(
+                      otpViewModel.otpErrorCode!,
+                      style: const TextStyle(color: Colors.red),
+                    );
+                  }
+                  return Container();
                 },
               ),
             ],

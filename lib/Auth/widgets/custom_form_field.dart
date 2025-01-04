@@ -5,31 +5,37 @@ import 'package:veggo/utilities/constants/size.dart';
 class CustomFormField extends StatelessWidget {
   final TextEditingController controller;
   final TextInputType keyboardType;
-  final String label;
-  final IconData icon;
+  final String? labelText;
+  final String? hintText;
+  final Widget? prefix;
   final String? Function(String?)? validator;
   final Color? prefixIconColor;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
 
   const CustomFormField({
     super.key,
     required this.controller,
     required this.keyboardType,
-    required this.label,
-    required this.icon,
-    required this.validator,
-    required this.prefixIconColor,
-    required this.focusNode,
+    this.labelText,
+    this.hintText,
+    this.prefix,
+    this.validator,
+    this.prefixIconColor,
+    this.focusNode,
   });
 
   @override
   Widget build(BuildContext context) {
+    
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       decoration: InputDecoration(
-        label: Text(label),
-        prefixIcon: Icon(icon),
+        hintText: hintText,
+        hintStyle: hintAndLableStyle(context),
+        label: labelText != null ? Text(labelText!) : null,
+        labelStyle: hintAndLableStyle(context),
+        prefixIcon: prefix,
         prefixIconColor: prefixIconColor,
       ),
       cursorColor: CColors.primary,
@@ -40,4 +46,11 @@ class CustomFormField extends StatelessWidget {
       autofocus: false,
     );
   }
+  
+  TextStyle? hintAndLableStyle(BuildContext context) {
+    return Theme.of(context).textTheme.bodySmall?.copyWith(
+      fontSize: CSizes.fontSizeMd,
+    );
+  }
+
 }

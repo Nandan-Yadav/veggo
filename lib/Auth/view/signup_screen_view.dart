@@ -63,8 +63,8 @@ class SignUpScreenView extends StatelessWidget {
                         return CustomFormField(
                           controller: controller.nameController,
                           keyboardType: TextInputType.name,
-                          label: AuthData.signUpNameFieldLable,
-                          icon: Icons.person,
+                          labelText: AuthData.signUpNameFieldLable,
+                          prefix: const Icon(Icons.person) ,
                           validator: TextFieldValidation.validateName,
                           prefixIconColor:
                               controller.isNameFocused ? CColors.primary : null,
@@ -81,8 +81,8 @@ class SignUpScreenView extends StatelessWidget {
                         return CustomFormField(
                           controller: controller.emailController,
                           keyboardType: TextInputType.emailAddress,
-                          label: AuthData.signUpEmailLable,
-                          icon: Icons.email,
+                          labelText: AuthData.signUpEmailLable,
+                          prefix: const Icon(Icons.email),
                           validator: TextFieldValidation.validateEmail,
                           prefixIconColor: controller.isEmailFocused
                               ? CColors.primary
@@ -100,8 +100,8 @@ class SignUpScreenView extends StatelessWidget {
                         return CustomFormField(
                           controller: controller.phoneController,
                           keyboardType: TextInputType.phone,
-                          label: AuthData.signUpPhoneLable,
-                          icon: Icons.phone,
+                          labelText: AuthData.signUpPhoneLable,
+                          prefix: const Icon(Icons.phone),
                           validator: TextFieldValidation.validatePhoneNumber,
                           prefixIconColor: controller.isPhoneFocused
                               ? CColors.primary

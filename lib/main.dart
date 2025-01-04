@@ -3,13 +3,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
-import 'package:veggo/Auth/controller/auth_provider.dart';
 import 'package:veggo/Auth/controller/signin_controller.dart';
 import 'package:veggo/Auth/controller/signup_controller.dart';
 import 'package:veggo/Auth/view/otp_screen_view.dart';
 import 'package:veggo/Auth/view/signin_screen_view.dart';
 import 'package:veggo/Auth/view/signup_screen_view.dart';
-import 'package:veggo/Auth/view_model/auth_view_model.dart';
+import 'package:veggo/Auth/view_model/login_view_model.dart';
+import 'package:veggo/Auth/view_model/otp_view_model.dart';
 import 'package:veggo/firebase_options.dart';
 import 'package:veggo/onboarding/controller/bottomsheet_navigation_provider.dart';
 import 'package:veggo/screens/auth_screen.dart';
@@ -35,8 +35,9 @@ void main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => BottomsheetNavigationProvider()),
-      ChangeNotifierProvider(create: (_) => AuthViewModel()),
-      ChangeNotifierProvider(create: (_) => CAuthProvider()),
+      ChangeNotifierProvider(create: (_) => OtpViewModel()),
+      ChangeNotifierProvider(create: (_) => LoginViewModel()),
+      //ChangeNotifierProvider(create: (_) => CAuthProvider()),
       ChangeNotifierProvider(create: (_) => SignInPhoneFieldController()),
       ChangeNotifierProvider(create: (_) => SignInCheckboxStateController()),
       ChangeNotifierProvider(create: (_) => SignUpNameFieldController()),
