@@ -1,185 +1,174 @@
-// import 'package:country_picker/country_picker.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:flutter/material.dart';
-// import 'package:veggo/Auth/model/auth_service.dart';
-// import 'package:veggo/Auth/view/otp_screen_view.dart';
+import 'dart:async';
+import 'package:country_picker/country_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:veggo/Auth/model/auth_service.dart';
+import 'package:veggo/services/auth_error_service.dart';
+import 'package:veggo/services/snackbar_service.dart';
 
-// class AuthViewModel extends ChangeNotifier {
-//   /// Instance of the [AuthService] class.
-//   final AuthService _authService = AuthService();
+class AuthViewModel extends ChangeNotifier {
+  final AuthService _authService = AuthService();
+  final authErrorHandaler = AuthErrorService();
 
-//   /// Loading state.
-//   bool _isLoading = false;
-//   bool get isLoading => _isLoading;
+  String _phoneNumber = '';
+  String? _verificationId;
 
-//   /// Error code.
-//   String? _loginScreenErrorCode;
-//   String? get loginerrorCode => _loginScreenErrorCode;
+  bool _isSignInLoading = false;
+  bool get isSignInLoading => _isSignInLoading;
 
-//   /// OTP Error code.
-//   String? _otpScreenErrorCode;
-//   String? get otpErrorCode => _otpScreenErrorCode;
+  bool _isOtpLoading = false;
+  bool get isOtpLoading => _isOtpLoading;
 
-//   /// Verification ID.
-//   String? _verificationId;
-  
-//   /// Default selected country.
-//   Country _selectedCountry = Country(
-//     phoneCode: '91',
-//     countryCode: 'IN',
-//     name: 'India',
-//     e164Sc: 0,
-//     geographic: true,
-//     level: 1,
-//     example: 'India',
-//     displayName: 'India',
-//     displayNameNoCountryCode: 'IN',
-//     e164Key: '',
-//   );
+  int _resendCooldownTime = 0;
+  int get resendCooldownTime => _resendCooldownTime;
 
-//   /// Getter for the selected country.
-//   Country get selectedCountry => _selectedCountry;
+  Country _selectedCountry = Country(
+    phoneCode: '91',
+    countryCode: 'IN',
+    name: 'India',
+    e164Sc: 0,
+    geographic: true,
+    level: 1,
+    example: 'India',
+    displayName: 'India',
+    displayNameNoCountryCode: 'IN',
+    e164Key: '',
+  );
+  Country get selectedCountry => _selectedCountry;
 
-//   /// Updates the selected country.
-//   void updateSelectedCountry(Country country) {
-//     _selectedCountry = country;
-//     notifyListeners();
-//     debugPrint('--- AuthViewModel: Selected country updated to: ${country.name} ---');
-//   }
+  void updateSelectedCountry(Country country) {
+    _selectedCountry = country;
+    notifyListeners();
+    debugPrint(
+        '--- AuthProvider: Selected country updated to: ${country.name} ---');
+  }
 
-//   /// Sets the loading state.
-//   void setLoading(bool value) {
-//     _isLoading = value;
-//     notifyListeners();
-//     debugPrint('--- AuthViewModel: Loading state set to: $value ---');
-//   }
+  void setSignInLoading(bool value) {
+    _isSignInLoading = value;
+    notifyListeners();
+    debugPrint('--- AuthProvider: Loading state set to: $value ---');
+  }
 
-//   /// Sets the error code.
-//   void setotpScreenErrorCode(String? code) {
-//     _otpScreenErrorCode = code;
-//     notifyListeners();
-//     debugPrint('--- AuthViewModel: OTP Error code set to: $code ---');
-//   }
+  void setOtpLoading(bool value) {
+    _isOtpLoading = value;
+    notifyListeners();
+    debugPrint('--- AuthProvider: Loading state set to: $value ---');
+  }
 
-//   void setloginScreenErrorCode(String? code) {
-//     _loginScreenErrorCode = code;
-//     notifyListeners();
-//     debugPrint('--- AuthViewModel: Login Error code set to: $code ---');
-//   }
+  void showError(FirebaseAuthException? e) {
+    notifyListeners();
+    debugPrint(
+        '--- AuthProvider: Error code : ${e?.code} \n message : ${e?.message} ---');
+  }
 
-//   /// Starts the phone number verification process.
-//   Future<void> startPhoneVerification(String phoneNumber, BuildContext context) async {
-//     setLoading(true);
-//     setloginScreenErrorCode(null);
-//     debugPrint('--- AuthViewModel: Starting phone number verification for: $phoneNumber ---');
+  void startResendCooldown() {
+    _resendCooldownTime = 30;
 
-//     await _authService.verifyPhoneNumber(
-//       phoneNumber: phoneNumber,
-//       onVerificationCompleted: (PhoneAuthCredential credential) async {
-//         debugPrint('--- AuthViewModel: Verification completed with credential: $credential ---');
-//         await  _authService.auth.signInWithCredential(credential);
-//       },
-//       onVerificationFailed: (e) {
-//         setloginScreenErrorCode(e.code);
-//         setLoading(false);
-//         debugPrint('--- AuthViewModel: Verification failed: ${e.message} ---');
-//         _showErrorSnackbar(context, _getFriendlyErrorMessage(e.code));
-//       },
-//       onCodeSent: (String verificationId, int? resendToken) {
-//         _verificationId = verificationId;
-//         debugPrint('--- AuthViewModel: Code sent with verificationId: $verificationId ---');
-//         Navigator.push(
-//           context,
-//           MaterialPageRoute(
-//             builder: (context) => OtpScreenView(verificationId: verificationId),
-//           ),
-//         );
-//       },
-//       onCodeAutoRetrievalTimeout: (String verificationId) {
-//         _verificationId = verificationId;
-//         debugPrint('--- AuthViewModel: Code auto retrieval timeout for verificationId: $verificationId ---');
-//       },
-//     );
-//     setLoading(false);
-//   }
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_resendCooldownTime <= 0) {
+        timer.cancel();
+        _resendCooldownTime = 0;
+      } else {
+        _resendCooldownTime--;
+      }
+      notifyListeners();
+    });
+  }
 
-//   /// Verifies the OTP.
-//   Future<void> signInWithOtp(String otp, BuildContext context) async {
-//     if (_verificationId == null) {
-//       setotpScreenErrorCode('invalid-verification-id');   
-//       debugPrint('--- AuthViewModel: Verification ID is null ---');
-//       _showErrorSnackbar(context, 'Verification ID is null');
-//       return;
-//     }
+  Future<void> startPhoneVerification({
+    required BuildContext context,
+    required String phoneNumber,
+    bool pushOtpScreen = true,
+  }) async {
+    setSignInLoading(true);
+    showError(null); // Reset sign-in error code
 
-//     setLoading(true);
-//     setotpScreenErrorCode(null);
-//     debugPrint('--- AuthViewModel: Verifying OTP: $otp ---');
+    if (_phoneNumber == phoneNumber && resendCooldownTime > 0) {
+      setSignInLoading(false);
+      SnackbarService(context).showSnackBarWithIconMessage(
+          icon: Icons.info,
+          title:
+              "You've reached the OTP limit. Try again in $resendCooldownTime seconds.");
+      return;
+    }
 
-//     await _authService.verifyOtp(
-//       verificationId: _verificationId!,
-//       otp: otp,
-//       onSuccess: () {
-//         debugPrint('--- AuthViewModel: OTP verification successful ---');
-//         debugPrint('--- AuthViewModel: Navigating to home screen ---');
-//         Navigator.pushNamed(context, '/home');
-//         setLoading(false);
-//       },
-//       onError: (e) {
-//         setotpScreenErrorCode(e.code);
-//         setLoading(false);
-//         debugPrint('--- AuthViewModel: OTP verification failed: ${e.message} ---');
-//         _showErrorSnackbar(context, _getFriendlyErrorMessage(e.code));
-//       },
+    debugPrint(
+        '--- AuthProvider: Starting phone number verification for: $phoneNumber ---');
 
-//     );
-//   }
+    await _authService.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      onVerificationCompleted: (PhoneAuthCredential credential) async {
+        debugPrint(
+            '--- AuthProvider: Verification completed with credential: $credential ---');
+        await _authService.auth.signInWithCredential(credential);
+      },
+      onVerificationFailed: (e) {
+        setSignInLoading(false);
+        showError(e);
+        SnackbarService(context).showSnackBarWithIconMessage(
+            icon: Icons.info, title: authErrorHandaler.authError(e.code));
+      },
+      onCodeSent: (String verificationId, int? resendToken) {
+        _verificationId = verificationId;
+        _phoneNumber = phoneNumber;
+        debugPrint(
+            '--- AuthProvider: Code sent with verificationId: $verificationId ---');
+        pushOtpScreen ? Navigator.pushNamed(context, '/otp') : null;
+        startResendCooldown(); // Start cooldown on successful OTP send
+        setSignInLoading(false);
+      },
+      onCodeAutoRetrievalTimeout: (String verificationId) {
+        _verificationId = verificationId;
+        debugPrint(
+            '--- AuthProvider: Code auto retrieval timeout for verificationId: $verificationId ---');
+      },
+    );
+  }
 
-//   /// Shows an error snackbar with the provided message.
-//   void _showErrorSnackbar(BuildContext context, String message) {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(
-//         content: Text(message),
-//         backgroundColor: Colors.red,
-//       ),
-//     );
-//   }
+  void resendOtp(BuildContext context) async {
+  if (_phoneNumber.isEmpty) {
+    SnackbarService(context).showSnackBarWithIconMessage(
+        icon: Icons.error, title: 'Phone number is empty.');
+    return;
+  }
+  await startPhoneVerification(
+    context: context,
+    phoneNumber: _phoneNumber,
+    pushOtpScreen: false,
+  );
+}
 
-//   /// Maps Firebase error codes to user-friendly messages.
-//   String _getFriendlyErrorMessage(String errorCode) {
-//     switch (errorCode) {
-//       case 'invalid-phone-number':
-//         return 'The phone number format is invalid. Please enter a valid phone number.';
-//       case 'invalid-verification-code':
-//         return 'The OTP you entered does not match the code sent. Please check and try again.';
-//       case 'invalid-verification-id':
-//         return 'The verification ID is invalid. Please try again.';
-//       case 'quota-exceeded':
-//         return 'The SMS quota for this project has been exceeded. Please try again later.';
-//       case 'missing-phone-number':
-//         return 'The phone number is required. Please enter your phone number.';
-//       case 'captcha-check-failed':
-//         return 'The reCAPTCHA verification failed. Please try again.';
-//       case 'missing-verification-code':
-//         return 'The verification code is required. Please enter the code sent to your phone.';
-//       case 'missing-verification-id':
-//         return 'The verification ID is required. Please try again.';
-//       case 'too-many-requests':
-//         return 'Too many requests. Please try again later.';
-//       case 'operation-not-allowed':
-//         return 'Phone sign-in is disabled for this project. Please contact support.';
-//       case 'provider-already-linked':
-//         return 'This phone number is already linked to another account.';
-//       case 'credential-already-in-use':
-//         return 'This phone number is already associated with a different user account.';
-//       case 'unverified-email':
-//         return 'The email is not verified. Please verify your email first.';
-//       case 'session-expired':
-//         return 'The verification code has expired. Please request a new code.';
-//       case 'network-request-failed':
-//         return 'A network error occurred. Please check your connection and try again.';
-//       default:
-//         return 'An unknown error occurred. Please try again.';
-//     }
-//   }
-// }
+Future<void> signInWithOtp(BuildContext context, String otp) async {
+  if (_verificationId == null) {
+    SnackbarService(context).showSnackBarWithIconMessage(
+        icon: Icons.error, title: 'Verification ID is missing.');
+    return;
+  }
+  setOtpLoading(true);
+  try {
+    await _authService.verifyOtp(
+      verificationId: _verificationId!,
+      otp: otp,
+      onSuccess: () {
+        debugPrint('--- AuthProvider: OTP verification successful ---');
+        Navigator.pushNamed(context, '/home');
+      },
+      onError: (e) {
+        showError(e);
+        SnackbarService(context).showSnackBarWithIconMessage(
+            icon: Icons.info, title: authErrorHandaler.authError(e.code));
+      },
+    );
+  } catch (e) {
+    debugPrint('--- AuthProvider: Error: $e ---');
+  } finally {
+    setOtpLoading(false);
+  }
+}
+
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+}

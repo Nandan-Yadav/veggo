@@ -26,10 +26,10 @@ class TextFieldValidation {
     if (value == null || value.isEmpty) {
       return 'Please enter your Phone number';
     }
-    if (value.trim().length != 10) {
+    if (value.length != 10) {
       return 'Phone number must be 10 digits';
     }
-    if (!isValidInteger(value)) {
+    if (!isValidPhoneNumber(value)) {
       return 'Phone number must contain only digits';
     }
     return null;
@@ -58,20 +58,29 @@ class TextFieldValidation {
   }
 
   static String? validateOtp(String? value) {
-    value = value?.trim();
-    if (value == null || value.isEmpty) {
-      return 'Please enter the OTP';
-    }
-    if (value.length != 6) {
-      return 'OTP must be 6 digits';
-    }
-    if (!isValidInteger(value)) {
-      return 'OTP must contain only digits';
-    }
-    return null;
+  value = value?.trim();
+  if (value == null || value.isEmpty) {
+    return 'Please enter the OTP';
   }
+  if (value.length != 6) {
+    return 'OTP must be 6 digits';
+  }
+  if (!isValidOtp(value)) {
+    return 'OTP must contain only digits';
+  }
+  return null;
+}
 
-  static bool isValidInteger(String str) {
-    return int.tryParse(str) != null;
-  }
+static bool isValidOtp(String str) {
+  // Regex to check if the string contains exactly 6 digits
+  final regex = RegExp(r'^\d{6}$');
+  return regex.hasMatch(str);
+}
+
+  
+static bool isValidPhoneNumber(String str) {
+  // Regex to check if the string contains only digits
+  final regex = RegExp(r'^\d{10}$');
+  return regex.hasMatch(str);
+}
 }

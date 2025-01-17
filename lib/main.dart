@@ -8,8 +8,7 @@ import 'package:veggo/Auth/controller/signup_controller.dart';
 import 'package:veggo/Auth/view/otp_screen_view.dart';
 import 'package:veggo/Auth/view/signin_screen_view.dart';
 import 'package:veggo/Auth/view/signup_screen_view.dart';
-import 'package:veggo/Auth/view_model/login_view_model.dart';
-import 'package:veggo/Auth/view_model/otp_view_model.dart';
+import 'package:veggo/Auth/view_model/auth_view_model.dart';
 import 'package:veggo/firebase_options.dart';
 import 'package:veggo/onboarding/controller/bottomsheet_navigation_provider.dart';
 import 'package:veggo/screens/auth_screen.dart';
@@ -35,9 +34,7 @@ void main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => BottomsheetNavigationProvider()),
-      ChangeNotifierProvider(create: (_) => OtpViewModel()),
-      ChangeNotifierProvider(create: (_) => LoginViewModel()),
-      //ChangeNotifierProvider(create: (_) => CAuthProvider()),
+      ChangeNotifierProvider(create: (_) => AuthViewModel()),
       ChangeNotifierProvider(create: (_) => SignInPhoneFieldController()),
       ChangeNotifierProvider(create: (_) => SignInCheckboxStateController()),
       ChangeNotifierProvider(create: (_) => SignUpNameFieldController()),
@@ -66,11 +63,9 @@ class MyApp extends StatelessWidget {
       routes: {
         '/onboarding': (context) => const OnboardingScreen(),
         '/Auth': (context) => const AuthScreen(),
-        '/sign_in': (context) => SignInScreenView(),
+        '/sign_in': (context) => const SignInScreenView(),
         '/sign_up': (context) => SignUpScreenView(),
-        '/otp': (context) => OtpScreenView(
-              verificationId: '',
-            ),
+        '/otp': (context) => const OtpScreenView(),
         '/home': (context) => const HomeScreen(),
       },
     );

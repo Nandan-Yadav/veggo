@@ -5,23 +5,20 @@ class SnackbarService {
 
   SnackbarService(this._context);
 
-  Future<void> showSnackBarWithIconMessage({required IconData icon, String title = ""}) async {
+  Future<void> showSnackBarWithIconMessage(
+      {IconData? icon, String title = ""}) async {
     ScaffoldMessenger.of(_context).showSnackBar(
-       SnackBar(
-        showCloseIcon: true,
-        closeIconColor: Colors.white,
-        content: ListTile(
-            leading: Icon(
-              icon,
-              color: Colors.white,
-              size: 40,
-            ),
-            title: Text(
-              title,
-              style: const TextStyle(fontSize: 16, color: Colors.white,),
-            )),
-        backgroundColor: const Color(0xFFF35148)
-      ),
+      SnackBar(
+          showCloseIcon: true,
+          closeIconColor: Colors.white,
+          backgroundColor: const Color(0xFFF35148),
+          content: Row(
+            children: [
+              Icon(icon,color: Colors.white,),
+              const SizedBox(width: 10,),
+              Expanded(child: Text(title,style: const TextStyle(fontSize: 16,fontWeight: FontWeight.w400),)),
+            ],
+          )),
     );
   }
 }

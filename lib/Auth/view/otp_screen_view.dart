@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
-import 'package:veggo/Auth/view_model/otp_view_model.dart';
-import 'package:veggo/Auth/widgets/custom_image.dart';
+import 'package:veggo/Auth/view_model/auth_view_model.dart';
+import 'package:veggo/widgets/custom_elevated_button.dart';
+import 'package:veggo/widgets/custom_image.dart';
 import 'package:veggo/data/auth_data.dart';
 import 'package:veggo/utilities/constants/color.dart';
 import 'package:veggo/utilities/constants/size.dart';
 import 'package:veggo/utilities/devices/device_utilities.dart';
 import 'package:veggo/utilities/validators/text_field_validation.dart';
+import 'package:veggo/widgets/custom_text_button.dart';
 
 class OtpScreenView extends StatefulWidget {
-  final String verificationId;
-
-  const OtpScreenView({super.key, required this.verificationId});
+  const OtpScreenView({super.key});
 
   @override
   _OtpScreenViewState createState() => _OtpScreenViewState();
@@ -101,55 +101,79 @@ class _OtpScreenViewState extends State<OtpScreenView> {
                         ],
                       ),
                     ),
+                    const SizedBox(height: CSizes.spaceBtSections),
+                    Selector<AuthViewModel, bool>(
+                      selector: (_, auth) => auth.isOtpLoading,
+                      builder: (context, isLoading, child) {
+                        return CustomElevatedButton(
+                          buttonStyle: ElevatedButton.styleFrom(
+                            disabledBackgroundColor: CColors.primary,
+                            disabledForegroundColor: Colors.white,
+                          ),
+                          onPress: isLoading
+                              ? null
+                              : () {
+                                  if (formKey.currentState?.validate() ??
+                                      false) {
+                                    debugPrint(
+                                        '--- OtpScreenView: Verify OTP button pressed ---');
+
+                                    context.read<AuthViewModel>().signInWithOtp(
+                                          context,
+                                          pinPutController.text.trim(),
+                                        );
+                                  }
+                                },
+                          child: isLoading
+                              ? const Row(
+                                  spacing: CSizes.defaultSpace,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2.5,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Text('Please wait...')
+                                  ],
+                                )
+                              : const Text('Verify OTP'),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
               const SizedBox(height: CSizes.paddingMd),
-
-              // Elevated button to verify OTP.
-              Consumer<OtpViewModel>(
-                builder: (context, otpViewModel, child) {
-                  return ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      disabledBackgroundColor: otpViewModel.isLoading
-                          ? CColors.primary
-                          : Colors.grey,
+              Text(
+                "Don't receive OTP?",
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.copyWith(color: Colors.grey),
+              ),
+              const SizedBox(height: CSizes.paddingMd),
+              Selector<AuthViewModel, int>(
+                selector: (_, auth) => auth.resendCooldownTime,
+                builder: (context, cooldown, child) {
+                  return CustomTextButton(
+                    buttonStyle: TextButton.styleFrom(
+                      disabledForegroundColor: Colors.grey,
+                      foregroundColor: CColors.primary,
+                      overlayColor: Colors.transparent,
                     ),
-                    onPressed: otpViewModel.isLoading
+                    onPress: cooldown > 0
                         ? null
                         : () {
-                            if (formKey.currentState?.validate() ?? false) {
-                              debugPrint(
-                                  '--- OtpScreenView: Verify OTP button pressed ---');
-                              otpViewModel.signInWithOtp(
-                                widget.verificationId,
-                                pinPutController.text.trim(),
-                                context,
-                              );
-                            }
+                            context.read<AuthViewModel>().resendOtp(context);
                           },
-                    child: otpViewModel.isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2.5,
-                            ),
-                          )
-                        : const Text('Verify OTP'),
+                    child: cooldown > 0
+                        ? Text('Resend OTP in $cooldown seconds')
+                        : const Text('Resend OTP'),
                   );
-                },
-              ),
-              Consumer<OtpViewModel>(
-                builder: (context, otpViewModel, child) {
-                  if (otpViewModel.otpErrorCode != null) {
-                    return Text(
-                      otpViewModel.otpErrorCode!,
-                      style: const TextStyle(color: Colors.red),
-                    );
-                  }
-                  return Container();
                 },
               ),
             ],

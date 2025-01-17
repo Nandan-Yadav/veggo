@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:veggo/Auth/controller/signup_controller.dart';
-import 'package:veggo/Auth/widgets/custom_rich_text.dart';
-import 'package:veggo/Auth/widgets/custom_form_field.dart';
-import 'package:veggo/Auth/widgets/custom_checkbox.dart';
-import 'package:veggo/Auth/widgets/custom_image.dart';
+import 'package:veggo/widgets/custom_rich_text.dart';
+import 'package:veggo/widgets/custom_form_field.dart';
+import 'package:veggo/widgets/custom_checkbox.dart';
+import 'package:veggo/widgets/custom_image.dart';
 import 'package:veggo/data/auth_data.dart';
 import 'package:veggo/utilities/constants/color.dart';
 import 'package:veggo/utilities/constants/size.dart';
@@ -125,8 +125,6 @@ class SignUpScreenView extends StatelessWidget {
                       onChanged: (value) {
                         controller.toggleCheckbox(value!);
                       },
-                      labelText: AuthData.signUpChackBoxDescription,
-                      linkText: 'T&C',
                     ),
                     if (controller.showError)
                       const Text(
